@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta name="baidu-site-verification" content="fAOm9u7CpG"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>晖哥哥的博客{% block title %}{% endblock %}</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/nprogress.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/font-awesome.min.css' %}">
+    <link rel="apple-touch-icon-precomposed" href="{% static 'blog/images/icon.png' %}">
+    <link rel="shortcut icon" href="{% static 'blog/images/favicon.ico' %}">
+    <script src="{% static 'blog/js/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'blog/js/nprogress.js' %}"></script>
+    <script src="{% static 'blog/js/jquery.lazyload.min.js' %}"></script>
+    <script src="{% static 'blog/js/holder.js' %}"></script>
+    <!--[if gte IE 9]>
+      <script src="{% static 'blog/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'blog/js/html5shiv.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'blog/js/respond.min.js" type="text/javascript' %}"></script>
+      <script src="{% static 'blog/js/selectivizr-min.js' %}" type="text/javascript"></script>
+    <![endif]-->
+    <!--[if lt IE 9]>
+      <script>window.location.href='upgrade-browser.html';</script>
+    <![endif]-->
+</head>
+<body class="user-select" style="background: #fff">
+    <header class="header">
+  <nav class="navbar navbar-default" id="navbar">
+    <div class="container">
+
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        <h1 class="logo hvr-bounce-in"><a href="/" title="独家记忆的博客"><img src="{% static 'blog/images/logo.png' %}" alt="独家记忆的博客"></a></h1>
+      </div>
+      <div class="collapse navbar-collapse" id="header-navbar">
+        <form class="navbar-form visible-xs" action="/" method="post">
+          <div class="input-group">
+            <input type="text" name="keyword" class="form-control" placeholder="请输入关键字" maxlength="20" autocomplete="off">
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search" name="search" type="submit">搜索</button>
+            </span> </div>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a data-cont="晖哥哥的博客首页" title="晖哥哥的博客首页" href="/">首页</a></li>
+          {% for classify in classifys %}
+          <li><a data-cont="{{ classify.name }}" title="{{ classify.name }}" href="{% url 'blog_wenzhangfenlei' classify.pk %}">{{ classify.name }}</a></li>
+          {% endfor %}
+        {% if request.user.is_authenticated %}
+        <li><a data-cont="欢迎：{{ user.username }}" title="欢迎：{{ user.username }}" href="#">{{ user.username }}</a></li>
+        <li><a data-cont="用户注销" title="用户注销" href="{% url 'blog_logout' %}">注销</a></li>
+            {% else %}
+            <li><a data-cont="用户登录" title="用户登录" href="{% url 'blog_login' %}">登录</a></li>
+        {% endif %}
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+    <section class="container">
+  <div class="content-wrap">
+    <div class="content-wrap">
+    <div class="content">
+      {% block zuobian %}
+   
+   {% endblock %}
+     </div>
+    </div>
+  </div>
+  <aside class="sidebar">
+   {% block youbian %}
+   
+   {% endblock %}
+  </aside>
+</section>
+
+
+    <footer class="footer">
+  <div class="container">
+    <p>本站[<a href="/" >晖哥哥的博客</a>]的部分内容来源于网络，若侵犯到您的利益，请联系站长删除！谢谢！蜀ICP备17009988号 </p>
+  </div>
+  <div id="gotop"><a class="gotop"></a></div>
+</footer>
+    <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'blog/js/jquery.ias.js' %}"></script>
+
+</body>
+</html>

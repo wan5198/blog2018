@@ -1,0 +1,141 @@
+{% extends 'blog/base.html' %}
+{% block title %}
+分类列表页
+{% endblock %}
+
+{% block zuobian %}
+<div class="title">
+        <h3 style="line-height: 1.3">【{{  page_of_blogs.object_list.first.release_time|date:"Y年m月"}}】文章归档</h3>
+      </div>
+    {% for wenzhang_list in page_of_blogs.object_list %}
+       <article class="excerpt excerpt-1" style="">
+      <a class="focus" href="{% url 'blog_wenzhangxiangqing' wenzhang_list.pk %}" title="{{ wenzhang_list.title }}" target="_blank" ><img class="thumb" data-original="{{ MEDIA_URL }}{{ wenzhang_list.img.img }}" src="{{ MEDIA_URL }}{{ wenzhang_list.img.img }}" alt=""  style="display: inline;"></a>
+            <header><a class="cat" href="{% url 'blog_wenzhangxiangqing' wenzhang_list.pk %}" title="{{ wenzhang_list.classify }}" >{{ wenzhang_list.classify }}<i></i></a>
+                <h2><a href="{% url 'blog_wenzhangxiangqing' wenzhang_list.pk %}" title="{{ wenzhang_list.title }}" target="_blank" >{{ wenzhang_list.title }}</a>
+                </h2>
+            </header>
+            <p class="meta">
+                <time class="time"><i class="glyphicon glyphicon-time"></i> {{ wenzhang_list.amend_time|date:"Y年m月d日" }}</time>
+                <span class="views"><i class="glyphicon glyphicon-eye-open"></i> {{ wenzhang_list.reads }}</span>
+            </p>
+            <p class="note">{{ wenzhang_list.content|striptags|truncatechars:80}}</p>
+        </article>
+    {% endfor %}
+    {#    分页1.2.3导航条#}
+      <ul class="pagination">
+{#      如果有上一页#}
+            <li >
+                 {% if pages.has_previous %}
+                <a href="?page={{ page }}" aria-label="previous">
+                 <span aria-hidden="true">&laquo;</span>
+                </a>
+                     {% else %}
+                     <span aria-hidden="true">&laquo;</span>
+               {% endif %}
+            </li>
+{#      使用.paginator.page_range方法将分页器里的页数遍历出来，并赋值给URL传递参数#}
+            {% for page in page_of_blogs.paginator.page_range %}
+{#                如果传进来的参数里的number 与分页参数相等就高亮显示#}
+                {% if page_of_blogs.number == page %}
+                <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% else %}
+                       <li ><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endif %}
+
+            {% endfor %}
+{#             如果有下一页#}
+            <li >
+{#            判断是否有下一页has_next#}
+                 {% if page_of_blogs.has_next %}
+                <a href="?page={{ page }}" aria-label="Next">
+                 <span aria-hidden="true">&raquo;</span>
+                </a>
+                     {% else %}
+                     <span aria-hidden="true">&raquo;</span>
+               {% endif %}
+            </li>
+
+
+      </ul>
+    </div>
+{% endblock %}
+
+
+
+{% block youbian %}
+    站长信息与搜索
+<div class="fixed">
+      <div class="widget widget-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab" >统计信息</a></li>
+          <li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab" >联系站长</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane contact active" id="notice">
+            <h2>归档时间:
+                 【{{  page_of_blogs.object_list.first.release_time|date:"Y年m月"}}】
+              </h2>
+              <h2>本月博文总数:
+              <span id="sitetime">{{ wenzhang_lists|length }}篇 </span></h2>
+          </div>
+            <div role="tabpanel" class="tab-pane contact" id="contact">
+              <h2>QQ:
+                  <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=185670616&amp;site=qq&amp;menu=yes" target="_blank" rel="nofollow" data-toggle="tooltip" data-placement="bottom" title=""  data-original-title="QQ:185670616">185670616</a>
+              </h2>
+              <h2>Email:
+              <a href="mailto:wan5198@qq.com" target="_blank" data-toggle="tooltip" rel="nofollow" data-placement="bottom" title=""  data-original-title="Email:wan5198@qq.com">wan5198@qq.com</a></h2>
+          </div>
+        </div>
+      </div>
+      <div class="widget widget_search">
+         <form class="navbar-form" action="{% url 'blog_sou' %}" method="get">
+            {% csrf_token %}
+          <div class="input-group">
+            <input type="text" name="sou" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off" >
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search"  type="submit">搜索</button>
+            </span> </div>
+        </form>
+      </div>
+    </div>
+   <div class="widget widget_hot">
+          <h3>推荐文章</h3>
+          <ul>
+              {% for foo in wenzhangs|slice:"5" %}
+
+                <li><a title="{{ foo.title }}" href="{% url 'blog_wenzhangxiangqing' foo.pk %}" ><span class="thumbnail">
+                    <img class="thumb" data-original="{{ MEDIA_URL }}{{ foo.img.img }}" src="{{ MEDIA_URL }}{{ foo.img.img }}" alt=""  style="display: block;">
+                </span><span class="text">{{ foo.title }}</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+                    {{ foo.amend_time|date:"Y年m月d日"}}
+                </span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>{{ foo.reads }}</span>
+                 <p class="note"><p>{{ foo.content|striptags|truncatechars:40}}</p>
+                </a></li>
+
+ {% endfor %}
+          </ul>
+     </div>
+    <div class="widget widget_hot">
+         <div class="article-tags">标签：<a href="#" rel="tag" >django2.0</a><a href="#" rel="tag" >flask</a><a href="#" rel="tag" >原创</a><a href="#" rel="tag" >推荐</a>
+        </div>
+     </div>
+    {#   动态统计地球#}
+     <div class="widget widget_sentence">
+        <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5cbiq1rrg98&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33" async="async"></script>
+     </div>
+{#    微信打赏位置#}
+     <div class="widget widget_sentence">
+        <a href="#" target="_blank" rel="nofollow" title="" >
+        <img style="width: 100%" src="{{ MEDIA_URL }}{{ wexindashangimg.first.guanggao_img }}" alt="" ></a>
+     </div>
+{#年月分类#}
+     <div class="widget widget_sentence">
+      <h3>日期归档</h3>
+      <div class="widget-sentence-link">
+          {% for blog_date in blog_dates %}
+       <p> <a href="{% url 'blog_nianyueguidang' blog_date.year blog_date.month %}" title="{{ blog_date|date:"Y年m月"}}" target="_blank" >{{ blog_date|date:"Y年m月"}}</a></p>
+           {% endfor %}
+      </div>
+    </div>
+ <script type="text/javascript">(function(){document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));var bdcs = document.createElement('script');bdcs.type = 'text/javascript';bdcs.async = true;bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=5918187161963652244' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(bdcs, s);})();</script>
+
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block title %}
+文章详情
+{% endblock %}
+{% block zuobian %}
+<header class="article-header">
+        <h1 class="article-title"> <title>"{{wenzhang.title}}"</title>{{ wenzhang.title }}</h1>
+        <div class="article-meta"> <span class="item article-meta-time">
+          <time class="time" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="发表时间：{{ wenzhang.release_time|date:"Y年m月d日" }}"><i class="glyphicon glyphicon-time"></i> {{ wenzhang.release_time|date:"Y年m月d日" }}</time>
+          </span> <span class="item article-meta-source" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="作者：{{ wenzhang.author }}"><i class="glyphicon glyphicon-globe"></i> {{ wenzhang.author }}</span> <span class="item article-meta-category" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="django主题"><i class="glyphicon glyphicon-list"></i> <a href="#" title="{{ wenzhang.classify }}" >{{ wenzhang.classify }}</a></span> <span class="item article-meta-views" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="浏览量：{{ wenzhang.reads }}"><i class="glyphicon glyphicon-eye-open"></i> {{ wenzhang.reads }}</span> <span class="item article-meta-comment" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="评论量"><i class="glyphicon glyphicon-comment"></i> {{ pingluns|length }}</span> </div>
+      </header>
+      <article class="article-content">
+        <p><a href="http://www.unicef.cn/campaign/201803cws/index.php?utm_source=Adwords_DG181&utm_campaign=PC-Targeting_JEB_1*1&utm_medium=DSPC-JEB-T&gclid=EAIaIQobChMItKmNmJC-2gIVhjOWCh2eXQAnEAEYASAAEgIoSvD_BwE"><img data-original="{{ MEDIA_URL }}{{ wexindashangimg.last.guanggao_img }}" src="{{ MEDIA_URL }}{{ wexindashangimg.last.guanggao_img }}" alt="" /></a></p>
+        <p>{{ wenzhang.content|safe}}</p>
+       {% if request.user.is_authenticated %}
+      <div style="width: 100%;text-align: center">
+    <form>
+     {% csrf_token %}
+        <span1></span1>
+        <input type="text" id="zan" value="1" hidden="hidden">
+        <input type="text" id="wenzhang_id" value="{{ wenzhang.id }}" hidden="hidden">
+        <input type="text" id="user_id" value="{{ request.user.pk }}" hidden="hidden">
+{#        <input type="button" value="赞一个" id="dianzan">#}
+        <span id="praise"><img src="{% static 'blog/images/Images/yizan.png'%}" width="7%"; height="7%" id="dianzan" /></span>
+<span>{{ m|default_if_none:"0" }}</span>
+    </form>
+           {% elif ret %}
+           <div style="width: 100%;text-align: center">
+    <span id="praise"><img src="{% static 'blog/images/Images/zan.png'%}" alt="登录后才可以点赞，请前往登录" title="登录后才可以点赞，请前往登录" width="7%"; height="7%" id="dianzan2" /></span>
+<span>{{ m }}</span>
+           {% else %}
+           <div style="width: 100%;text-align: center">
+    <span id="praise"><img src="{% static 'blog/images/Images/zan.png'%}" alt="登录后才可以点赞，请前往登录" title="登录后才可以点赞，请前往登录" width="7%"; height="7%" id="dianzan2" /></span>
+<span>{{ m|default_if_none:"0" }}</span>
+
+       {% endif %}
+      </div>
+          {% if upwenzhang|default_if_none:"" %}
+           <p>上一篇：<a href="{% url 'blog_wenzhangxiangqing' upwenzhang.pk %}">{{ upwenzhang.title }}</a></p>
+          {% endif %}
+            {% if nextwenzhang|default_if_none:""%}
+             <p>下一篇：<a href="{% url 'blog_wenzhangxiangqing' nextwenzhang.pk %}">{{ nextwenzhang.title }}</a></p>
+            {% endif %}
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<div name="dashmain" id="dash-main-id-879e45" class="dash-main-3 879e45-3"></div><script type="text/javascript" charset="utf-8" src="https://www.dashangcloud.com/static/ds-2.0.js"></script>
+              <script>                  window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "2", "bdMiniList": false, "bdPic": "", "bdStyle": "1", "bdSize": "32" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
+      </article>
+
+      <div class="title" id="comment">
+      {% if request.user.is_authenticated %}
+          <h3>评论:({{ pingluns|length }})</h3>&nbsp;<p>{{ request.user.username }}请输入你的评论：</p>
+          {% else %}
+          <h3>评论:({{ pingluns|length }})</h3>&nbsp;<p>没有登录不能发表评论，如没有账号请先注册后再登录评论</p>
+          {% endif %}
+      </div>
+      <div id="respond">
+     {% if request.user.is_authenticated %}
+
+            <form action="" method="POST">
+                <div class="comment">
+                    {% csrf_token%}
+                    <input name="wenzhang_id" id="" class="form-control" size="22"  maxlength="58" autocomplete="off"  type="hidden" value="{{ wenzhang.pk }}">
+                    <div class="comment-box">
+                        <textarea placeholder="您的评论或留言（必填）" name="comment" id="comment-textarea" cols="100%" rows="3" tabindex="3"></textarea>
+                            <button type="submit" name="comment-submit" id="comment-submit" tabindex="4">评论</button>
+                        </div>
+                    </div>
+            </form>
+       {% else %}
+         <form class="form-inline"  action="{% url 'blog_login' %}" method="POST">
+             <div class="form-group">
+              {% csrf_token%}
+            <label for="exampleInputName2">用户名</label>
+            <input type="text" class="form-control" name="username" placeholder="用户名">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail2">密码</label>
+            <input type="password" class="form-control" name="password" placeholder="密码">
+          </div>
+          <button type="submit" class="btn btn-default">登录</button>
+             <a href="{% url 'blog_register' %}">还没有账号？点此注册</a>
+         </form>
+           {% endif %}
+            </div>
+
+      <span id="postcomments">
+{% for pinglun in pingluns %}
+<div class="item article-meta-time" style="border:1px solid #31B2F3">
+<ol id="comment_list" class="commentlist">
+<li class="comment-content"><span class="comment-f">{{ forloop.counter }}</span>
+    <div class="comment-main"><p><a class="address"  rel="nofollow">{{ pinglun.author }}</a><span class="time">{{ pinglun.time|date:"Y年m月d日" }}</span><br>{{ pinglun.content }}</p></div></li></ol>
+</div>
+    {% empty %}
+    暂无评论，欢迎发表意见！
+{% endfor %}
+      </span>
+     </div>
+{% endblock %}
+
+
+
+{% block youbian %}
+{#    站长信息与搜索#}
+<div class="fixed">
+      <div class="widget widget-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab" >统计信息</a></li>
+          <li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab" >联系站长</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane contact active" id="notice">
+            <h2>本文阅读总数:
+                  累计{{ wenzhang.reads }}人次
+              </h2>
+              <h2>本文评论总数:
+              <span id="sitetime">{{ pingluns|length }} </span></h2>
+          </div>
+            <div role="tabpanel" class="tab-pane contact" id="contact">
+              <h2>QQ:
+                  <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=185670616&amp;site=qq&amp;menu=yes" target="_blank" rel="nofollow" data-toggle="tooltip" data-placement="bottom" title=""  data-original-title="QQ:185670616">185670616</a>
+              </h2>
+              <h2>Email:
+              <a href="mailto:wan5198@qq.com" target="_blank" data-toggle="tooltip" rel="nofollow" data-placement="bottom" title=""  data-original-title="Email:wan5198@qq.com">wan5198@qq.com</a></h2>
+          </div>
+        </div>
+      </div>
+      <div class="widget widget_search">
+         <form class="navbar-form" action="{% url 'blog_sou' %}" method="get">
+            {% csrf_token %}
+          <div class="input-group">
+            <input type="text" name="sou" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off" >
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search"  type="submit">搜索</button>
+            </span> </div>
+        </form>
+      </div>
+    </div>
+{#评论#}
+    <div class="widget widget_hot">
+          <h3>推荐文章</h3>
+          <ul>
+              {% for foo in wenzhangs|slice:"5" %}
+
+                <li><a title="{{ foo.title }}" href="{% url 'blog_wenzhangxiangqing' foo.pk %}" ><span class="thumbnail">
+                    <img class="thumb" data-original="{{ MEDIA_URL }}{{ foo.img.img }}" src="{{ MEDIA_URL }}{{ foo.img.img }}" alt=""  style="display: block;">
+                </span><span class="text">{{ foo.title }}</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+                    {{ foo.amend_time|date:"Y年m月d日" }}
+                </span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>{{ foo.reads }}</span>
+                 <p class="note"><p>{{ foo.content|striptags|truncatechars:40}}</p>
+                </a></li>
+
+ {% endfor %}
+          </ul>
+     </div>
+    <div class="widget widget_hot">
+         <div class="article-tags">标签：<a href="#" rel="tag" >django2.0</a><a href="#" rel="tag" >flask</a><a href="#" rel="tag" >原创</a><a href="#" rel="tag" >推荐</a>
+        </div>
+     </div>
+    {#   动态统计地球#}
+     <div class="widget widget_sentence">
+        <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5cbiq1rrg98&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33" async="async"></script>
+     </div>
+{#    微信打赏位置#}
+     <div class="widget widget_sentence">
+        <a href="#" target="_blank" rel="nofollow" title="" >
+        <img style="width: 100%" src="{{ MEDIA_URL }}{{ wexindashangimg.first.guanggao_img }}" alt="" ></a>
+     </div>
+    <script type="text/javascript">(function(){document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));var bdcs = document.createElement('script');bdcs.type = 'text/javascript';bdcs.async = true;bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=5918187161963652244' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(bdcs, s);})();</script>
+    <script>
+    $('#dianzan').click(function () {
+        $.ajax({
+            url:'/blog_dianzan/',
+            type:'POST',
+            data:{
+                "zan":$('#zan').val(),
+                "wenzhang_id":$('#wenzhang_id').val(),
+                "user_id":$('#user_id').val(),
+                "csrfmiddlewaretoken":$("[name='csrfmiddlewaretoken']").val()
+            },
+            success:function (data) {
+                var dataObj=JSON.parse(data);
+                $('span1').text(dataObj['msg'])}
+
+        })
+    })
+    </script>
+
+{% endblock %}

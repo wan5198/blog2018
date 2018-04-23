@@ -1,0 +1,215 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block title %}
+首页
+{% endblock %}
+{% block zuobian %}
+{#    轮播图#}
+      <div id="focusslide" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#focusslide" data-slide-to="0" class="active"></li>
+          <li data-target="#focusslide" data-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+            <li class="item active">
+          <a href="#" target="_blank" title="晖哥哥博客欢迎你" >
+{#              由于遍历出来不滚动，所有直接用.first.index_img方法取出第一条图片的地址#}
+          <img src="http://2018.hui2017.top/{{ index_lunbotus.first.name }}" alt="晖哥哥博客欢迎你" class="img-responsive"></a>
+          </li>
+          <div class="item">
+          <a href="#" target="_blank" title="晖哥哥博客欢迎你" >
+              {#              由于遍历出来不滚动，所有直接用.last.index_img方法取出下一条图片的地址#}
+          <img src="http://2018.hui2017.top/{{ index_lunbotus.last.name }}" alt="晖哥哥博客欢迎你" class="img-responsive"></a>
+          </div>
+        </div>
+        <a class="left carousel-control" href="#focusslide" role="button" data-slide="prev" rel="nofollow"> <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> <span class="sr-only">上一个</span> </a> <a class="right carousel-control" href="#focusslide" role="button" data-slide="next" rel="nofollow"> <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <span class="sr-only">下一个</span> </a> </div>
+{#    置顶#}
+    {% for recommended in recommended %}
+          <article class="excerpt-minic excerpt-minic-index">
+            <h2><span class="red">【置顶公告】</span><a target="_blank" href="#" title="{{ recommended.title }}" >{{ recommended.title }}</a>
+            </h2>
+            <p class="note">{{ recommended.content}}</p>
+        </article>
+    {% endfor %}
+
+
+{#    帖子小导航#}
+      <div class="title">
+        <h3>最新发布</h3>
+        <div class="more">
+              {% for classify in classifys %}
+                   <a href="{% url 'blog_wenzhangfenlei' classify.pk %}" title="{{ classify.name }}" >{{ classify.name }}</a>
+              {% endfor %}
+
+
+
+            </div>
+      </div>
+{#    帖子模型#}
+{#    object_list这个方法是获取分页中的数据，然后遍历出来打印#}
+{#    开始分页#}
+    {% for wenzhang in pages.object_list %}
+      <article class="excerpt excerpt-1" style="">
+      <a class="focus" href="{% url 'blog_wenzhangxiangqing' wenzhang.pk %}" title="{{ wenzhang.title }}" target="_blank" >
+          <img class="thumb" data-original="{{ MEDIA_URL }}{{ wenzhang.img.img }}" src="{{ MEDIA_URL }}{{ wenzhang.img.img }}" alt="图片说明"  style="display: inline;"></a>
+            <header><a class="cat" href="#" title="{{ wenzhang.classify }}" >{{ wenzhang.classify }}<i></i></a>
+                <h2><a href="{% url 'blog_wenzhangxiangqing' wenzhang.pk %}" title="{{ wenzhang.title }}" target="_blank" >{{ wenzhang.title }}</a>
+                </h2>
+            </header>
+            <p class="meta">
+
+                <time class="time"><i class="glyphicon glyphicon-time"></i> {{ wenzhang.amend_time|date:"Y年m月d日" }}</time>
+                <span class="views"><i class="glyphicon glyphicon-eye-open"></i> {{ wenzhang.reads}}</span>
+				<span class="comment"><i class="glyphicon glyphicon-comment"></i> {{ wenzhang.pinlun_set.all|length}}</span>
+            </p>
+            <p class="note"><p>{{ wenzhang.content|striptags|truncatechars:80}}</p>
+        </article>
+
+    {% endfor %}
+{#结束分页遍历#}
+{#    分页1.2.3导航条#}
+      <ul class="pagination">
+{#      如果有上一页#}
+            <li >
+                 {% if pages.has_previous %}
+                <a href="?page={{ page }}" aria-label="previous">
+                 <span aria-hidden="true">&laquo;</span>
+                </a>
+                     {% else %}
+                     <span aria-hidden="true">&laquo;</span>
+               {% endif %}
+            </li>
+{#      使用.paginator.page_range方法将分页器里的页数遍历出来，并赋值给URL传递参数#}
+            {% for page in page_range%}
+{#                如果传进来的参数里的number,是它的一个方法，可以得到当前的页码 与分页参数相等就高亮显示#}
+                {% if pages.number == page %}
+                <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% else %}
+                       <li ><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+{#             如果有下一页#}
+            <li >
+{#            判断是否有下一页has_next#}
+                 {% if pages.has_next %}
+                <a href="?page={{ page }}" aria-label="Next">
+                 <span aria-hidden="true">&raquo;</span>
+                </a>
+                     {% else %}
+                     <span aria-hidden="true">&raquo;</span>
+               {% endif %}
+            </li>
+{#          <li><span>共 {{ pages.paginator|length }} 页</span></li>#}
+
+      </ul>
+{% endblock %}
+
+{% block youbian %}
+{#    站长信息与搜索#}
+<div class="fixed">
+      <div class="widget widget-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab" >统计信息</a></li>
+          <li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab" >联系站长</a></li>
+          {% if request.user.is_authenticated %}
+           <li role="presentation"><a href="#contact2" aria-controls="contact" role="tab" data-toggle="tab" >个人中心</a></li>
+              {% else %}
+           <li role="presentation"><a href="#contact2" aria-controls="contact" role="tab" data-toggle="tab" >登录注册</a></li>
+            {% endif %}
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane contact active" id="notice">
+            <h2>博文总数:
+                  {{ wenzhangs|length }}篇
+              </h2>
+              <h2>网站开通时间:
+              <span id="sitetime">2018年3月29日 </span></h2>
+          </div>
+            <div role="tabpanel" class="tab-pane contact" id="contact">
+              <h2>QQ:
+                  <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=185670616&amp;site=qq&amp;menu=yes" target="_blank" rel="nofollow" data-toggle="tooltip" data-placement="bottom" title=""  data-original-title="QQ:185670616">185670616</a>
+              </h2>
+              <h2>Email:
+              <a href="mailto:wan5198@qq.com" target="_blank" data-toggle="tooltip" rel="nofollow" data-placement="bottom" title=""  data-original-title="Email:wan5198@qq.com">wan5198@qq.com</a></h2>
+          </div>
+             <div role="tabpanel" class="tab-pane contact" id="contact2">
+           {% if request.user.is_authenticated %}
+               <h2>欢迎：{{ user.username }}</h2>
+               <h2>最近登录时间：{{ user.last_login|date:"Y年m月d日" }}</h2>
+               {% else %}
+            <h2><a href="{% url 'blog_login' %}">登录</a></h2>
+            <h2><a href="{% url 'blog_register' %}">注册</a></h2>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="widget widget_search">
+        <form class="navbar-form" action="{% url 'blog_sou' %}" method="get">
+            {% csrf_token %}
+          <div class="input-group">
+            <input type="text" name="sou" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off" >
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search"  type="submit">搜索</button>
+            </span> </div>
+        </form>
+      </div>
+    </div>
+{#   动态统计地球#}
+     <div class="widget widget_sentence">
+        <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5cbiq1rrg98&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33" async="async"></script>
+     </div>
+    
+    {#评论#}
+
+    <div class="widget widget_hot">
+          <h3>最新评论</h3>
+{#               slice 切片，只显示前5#}
+                {% for pinglun in pingluns|slice:"5" %}
+                    <ul>
+                <li><a title="{{ pinglun.user }}" href={% url 'blog_wenzhangxiangqing' pinglun.wenzhang.pk %}><span class="thumbnail">
+                    <img class="thumb" data-original="{{ MEDIA_URL }}{{ pinglun.wenzhang.author.user_ex.avatar }}" src="{{ MEDIA_URL }}{{ pinglun.user.user_ex.avatar }}" alt=""  style="display: block;">
+                </span><span class="text">{{ pinglun.content }}</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+                    {{ pinglun.time|date:"Y年m月d日" }}
+                </span></a></li>
+                     </ul>
+                {% endfor %}
+
+
+
+
+     </div>
+
+{#    微信打赏位置#}
+     <div class="widget widget_sentence">
+        <a href="#" target="_blank" rel="nofollow" title="" >
+        <img style="width: 100%" src="{{ MEDIA_URL }}{{ wexindashangimg.first.guanggao_img }}" alt="" ></a>
+     </div>
+{#  友情链接#}
+    <div class="widget widget_sentence">
+      <h3>友情链接</h3>
+      <div class="widget-sentence-link">
+
+          {% for goodurl in goodurls %}
+
+       <p> <a href="{{ goodurl.gurl }}" title="{{ goodurl.miaosu }}" target="_blank" >{{ goodurl.name }}</a></p>
+
+           {% endfor %}
+
+      </div>
+    </div>
+{#年月分类#}
+     <div class="widget widget_sentence">
+      <h3>日期归档</h3>
+      <div class="widget-sentence-link">
+          {% for blog_date in blog_dates %}
+       <p> <a href="{% url 'blog_nianyueguidang' blog_date.year blog_date.month %}" title="{{ blog_date|date:"Y年m月"}}" target="_blank" >{{ blog_date|date:"Y年m月"}}</a></p>
+           {% endfor %}
+      </div>
+    </div>
+{#    二维码位置#}
+     <div class="widget widget_sentence">
+        <a href="#" target="_blank" rel="nofollow" title="" >
+        <img style="width: 100%" src="{% static 'blog/images/erweima.jpg'  %}" alt="" ></a>
+     </div>
+    <script type="text/javascript">(function(){document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));var bdcs = document.createElement('script');bdcs.type = 'text/javascript';bdcs.async = true;bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=5918187161963652244' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(bdcs, s);})();</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'blog/base.html' %}
+{% block zuobian %}
+<form action="{% url 'cjcx2018_login' %}" method="post" style="width: 50%">
+{% csrf_token %}
+{% for field in login_form %}
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    <p>{{ field.errors.as_text }}</p>
+{% endfor %}
+<span>{{ login_form.non_field_errors }}</span>
+    <input type="submit" value="登陆">
+</form>
+{% endblock %}
+
